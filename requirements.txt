@@ -1,0 +1,15 @@
+# FTTH Expansion Intelligence Platform - Demo Requirements
+# Tested on Python 3.11+
+
+# Core
+pandas>=2.0.0
+numpy>=1.26.0
+
+# Streamlit + Visualization
+streamlit>=1.32.0
+plotly>=5.18.0
+pydeck>=0.8.0
+
+# No other dependencies needed for demo!
+# Database: SQLite (built-in)
+# AI Swarm: Pure Python (no LLM required)
