@@ -366,10 +366,11 @@ decision_class, decision_text = ai_decision_block(roi['payback'], roi['npv'], ro
 @st.cache_data(ttl=300)
 def run_swarm_analysis(zones_json: str):
     """Run AI swarm on all zones (cached)."""
-    zones = pd.read_json(zones_json).to_dict('records')
+    from io import StringIO
+    zones = pd.read_json(StringIO(zones_json)).to_dict('records')
     coordinator = SwarmCoordinator()
     return coordinator.analyze_all_zones(zones)
-
+    
 swarm_decisions = run_swarm_analysis(zone_df.to_json())
 
 
