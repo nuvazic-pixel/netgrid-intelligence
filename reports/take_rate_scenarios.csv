@@ -1,0 +1,4 @@
+scenario,homes,take_rate_pct,arpu_eur_per_month,capex_eur_per_home,subscribers,total_capex_eur,annual_sales_value_eur,annual_operating_surplus_proxy_eur
+Lower take rate,3000,30,40,900,900,2700000.0,432000,302400.0
+Base take rate,3000,45,40,900,1350,2700000.0,648000,453600.0
+Higher take rate,3000,60,40,900,1800,2700000.0,864000,604800.0
