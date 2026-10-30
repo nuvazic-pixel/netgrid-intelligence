@@ -73,3 +73,21 @@ The core scenario example does not require API keys. Some geographic features ma
 - Add rollout progress, quantity reconciliation and documentation-quality KPIs.
 
 [Portfolio](https://github.com/nuvazic-pixel) · [LinkedIn](https://www.linkedin.com/in/bistreanchirodeamark)
+
+## Financial model verification
+
+`calculations.calc_roi` computes payback from cumulative, undiscounted cash flows,
+including the configured churn and OPEX assumptions. It returns `payback=None`
+when capital is not recovered within `horizon_years`; recovery at the final year
+still counts. The dashboard and executive report show this explicitly rather
+than substituting the modeled horizon as a recovery date.
+
+Run the financial regression tests from the repository root:
+
+```bash
+python -m pip install "numpy>=1.26.0" "pandas>=2.0.0"
+python -m unittest discover -s tests -v
+```
+
+These tests cover the financial model and its payback presentation helpers.
+They do not validate real-world adoption, investment returns, or the full dashboard.

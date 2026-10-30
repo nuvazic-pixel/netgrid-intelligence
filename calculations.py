@@ -71,7 +71,10 @@ def calc_roi(
     years: int = 10
 ) -> dict:
     """
-    Calculate ROI metrics: NPV, IRR, Payback period.
+    Calculate NPV, IRR and the first undiscounted capital-recovery time.
+
+    ``payback`` is None when cumulative cash flows do not recover the initial
+    investment within ``years``. Recovery exactly at the horizon is valid.
     """
     total_capex = homes * capex_per_home
     subs_base = homes * take_rate
@@ -79,7 +82,7 @@ def calc_roi(
     # Annual cashflows
     cashflows = [-total_capex]
     cumulative = -total_capex
-    payback_year = years  # default to end if never breaks even
+    payback_year = 0.0 if total_capex <= 0 else None
     
     for year in range(1, years + 1):
         # Subscribers decay with churn
@@ -90,7 +93,7 @@ def calc_roi(
         cashflows.append(net_cf)
         
         cumulative += net_cf
-        if cumulative >= 0 and payback_year == years:
+        if cumulative >= 0 and payback_year is None:
             # Interpolate exact payback
             prev_cum = cumulative - net_cf
             if net_cf > 0:
@@ -106,6 +109,7 @@ def calc_roi(
         "npv": npv,
         "irr": irr * 100,  # as percentage
         "payback": payback_year,
+        "horizon_years": years,
         "total_capex": total_capex,
         "cashflows": cashflows,
     }

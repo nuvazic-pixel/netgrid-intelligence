@@ -26,6 +26,7 @@ from calculations import (
     calc_breakeven
 )
 from geo_utils import geocode_address
+from financial_summary import ai_decision_block, format_payback, payback_metric
 
 # ============================================================
 # PAGE CONFIG
@@ -234,25 +235,6 @@ def get_vote_emoji(vote: Vote) -> str:
         Vote.DELAY: "🔴",
         Vote.AVOID: "⛔",
     }.get(vote, "⚪")
-
-
-def ai_decision_block(payback: float, npv: float, irr: float) -> tuple[str, str]:
-    if payback < 5 and npv > 0 and irr >= 15:
-        return (
-            'decision-good',
-            '🟢 AI Investment Decision: Strong investment case. '
-            'Deploy now. Commercial fundamentals are solid and capital recovery is fast.'
-        )
-    elif payback < 8 and npv > 0:
-        return (
-            'decision-mid',
-            '🟡 AI Investment Decision: Viable, but optimize CAPEX, adoption, or ARPU before scale-up.'
-        )
-    return (
-        'decision-bad',
-        '🔴 AI Investment Decision: High-risk scenario. '
-        'Not recommended without subsidy, redesign, or stronger demand assumptions.'
-    )
 
 
 def investment_priority(row: pd.Series, capex_per_home: float, take_rate: float, arpu: float) -> pd.Series:
@@ -601,7 +583,8 @@ with tab3:
     m2.metric('Subscribers', f'{scenario["subs"]:,}', f'{take_rate}% take rate')
     m3.metric('Annual Revenue', f'€{scenario["annual_rev"]/1000:.0f}K', f'€{arpu}/month ARPU')
     m4.metric('EBITDA', f'€{scenario["ebitda"]/1000:.0f}K', f'{scenario["ebitda_margin"]:.0f}% margin')
-    m5.metric('Payback', f'{roi["payback"]:.1f} yrs', 'Fast' if roi['payback'] < 7 else 'Slow')
+    payback_value, payback_context = payback_metric(roi['payback'], roi['horizon_years'])
+    m5.metric('Payback', payback_value, payback_context, delta_color='off')
     m6.metric('IRR', f'{roi["irr"]:.0f}%', '10-year horizon')
 
     st.markdown('### Cash Flow Projection')
@@ -888,7 +871,7 @@ with tab7:
 | Projected Annual Revenue | €{scenario['annual_rev']/1000:.0f}K |
 | NPV (10y) | €{roi['npv']/1000:.0f}K |
 | IRR | {roi['irr']:.0f}% |
-| Payback Period | {roi['payback']:.1f} years |
+| Payback Period | {format_payback(roi['payback'], roi['horizon_years'])} |
 
 #### 4. Strategic Recommendations
 1. **Phase 1:** Deploy in AI-recommended STRONG_INVEST zones ({strong_invest} Gemeinden)
