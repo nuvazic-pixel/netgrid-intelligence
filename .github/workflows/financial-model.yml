@@ -1,0 +1,38 @@
+name: Financial model tests
+
+on:
+  push:
+    paths:
+      - calculations.py
+      - financial_summary.py
+      - app.py
+      - tests/**
+      - .github/workflows/financial-model.yml
+  pull_request:
+    paths:
+      - calculations.py
+      - financial_summary.py
+      - app.py
+      - tests/**
+      - .github/workflows/financial-model.yml
+
+permissions:
+  contents: read
+
+jobs:
+  payback:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install financial model dependencies
+        run: python -m pip install "numpy>=1.26.0" "pandas>=2.0.0"
+      - name: Test capital recovery and presentation
+        run: python -m unittest discover -s tests -v
+      - name: Check dashboard syntax
+        run: python -m py_compile app.py calculations.py financial_summary.py
